@@ -55,18 +55,125 @@
     <button>Trigger a Global Error</button>
   </section>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "85e48b59158d4481b54aec665d915ba8"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+ 
+
+    class ArithError extends Error {
+        constructor(message) {
+          super(message); // (1)
+          this.name = "ArithError"; // (2)
+        }
+    }
+
     let calculateBtn = document.querySelector('#calculate');
     calculateBtn.addEventListener('click', () => {
       let output = document.querySelector('output');
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
+      if(operator == "/" && secondNum == "0"){
+        throw new ArithError("Cannot divide by 0!");
+      }
+      if(firstNum == "" || secondNum == ""){
+        throw new ArithError("Cannot apply arithmetic operations on strings!");
+      }
       output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
-    // TODO - Make buttons functional
+    for(var i = 0; i <  errorBtns.length; i++){
+      let output = document.querySelector('output');
+      let firstNum = document.querySelector('#first-num').value;
+      let secondNum = document.querySelector('#second-num').value;
+      let operator = document.querySelector('#operator').value;
+      switch(i) {
+        case 0:
+          errorBtns[i].addEventListener('click', () => {
+            let operator = document.querySelector('#operator').value;
+            console.log('The operator is ' + operator + '.');
+          });
+          break;
+        case 1:
+          errorBtns[i].addEventListener('click', () => {
+            let firstNum = document.querySelector('#first-num').value;
+            console.error('You just pressed an error button. The first number is ' + firstNum + '.');
+          });
+          break;
+        case 2:
+          errorBtns[i].addEventListener('click', () => {
+            console.dir('output');
+          });
+          break;
+        case 3:
+          errorBtns[i].addEventListener('click', () => {
+            console.dirxml('fieldset');
+          });
+          break;
+        case 4:
+          errorBtns[i].addEventListener('click', () => {
+            console.group("some group");
+          });
+          break;
+        case 5:
+          errorBtns[i].addEventListener('click', () => {
+            console.groupEnd();
+          });
+          break;
+        case 6:
+          errorBtns[i].addEventListener('click', () => {
+            let output = document.querySelector('output');
+            let firstNum = document.querySelector('#first-num').value;
+            let secondNum = document.querySelector('#second-num').value;
+            let operator = document.querySelector('#operator').value;
+            console.table([firstNum, operator, secondNum, output.value]);
+          });
+          break;
+        case 7:
+          errorBtns[i].addEventListener('click', () => {
+            console.log('Timer started.');
+            console.time("time");
+          });
+          break;
+        case 8:
+          errorBtns[i].addEventListener('click', () => {
+            console.log('Timer ended.');
+            console.timeEnd("time");
+          });
+          break;
+        case 9:
+          errorBtns[i].addEventListener('click', () => {
+            function traceme(){
+              function catchu(){
+                console.trace();
+              }
+              catchu();
+            }
+            traceme();
+          });
+          break;
+        case 10:
+          errorBtns[i].addEventListener('click', () => {
+            try {
+              document.querySelector('output').value = boom;
+            } catch (err) {
+              console.error(err.message);
+            }
+          });
+          break;
+        default:
+      }
+ 
+      window.onerror = function (msg, url, lineNo, columnNo, error) {
+        alert('Error happened. Sent to TrackJS.');
+        return false;
+      };
+      
+    }
   </script>
 </body>
 </html>
